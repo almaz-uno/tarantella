@@ -16,6 +16,8 @@ func main() {
 	}
 }
 
+// Tarantella testing tool
+// feel free to add some useful stuff here
 func doMain() error {
 	// actually tarantella doesn't check password, and username used for directory, where data files are stored
 	opts := tarantool.Opts{User: "user", Pass: "DSoXbver3p4bbMK6dGhUfo"}
@@ -24,12 +26,16 @@ func doMain() error {
 		return err
 	}
 	log.Info().Any("greeting", conn.Greeting).Msg("Greeting received")
+
+	// not so important, but ping
 	r, err := conn.Ping()
 	log.Error().Err(err).Uint32("res", r.Code).Msg("Ping successfully")
 
+	// execute
 	resp, err := conn.Execute(`select * from things`, []interface{}{})
 	log.Info().Err(err).Any("resp", resp).Msg("Prepared")
 
+	// insert
 	resp, err = conn.Insert("tester", []any{"assd", "ABBA", 1972})
 	// resp, err := conn.Insert("tester", []any{5, "Lord Huron", 2020})
 	if err != nil {
