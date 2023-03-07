@@ -57,4 +57,7 @@ func TestParse(t *testing.T) {
 	t.Run("ping", func(t *testing.T) {
 		parsePackageData(t, path.Base(t.Name()))
 	})
+	t.Run("execute.1", func(t *testing.T) {
+		parsePackageData(t, path.Base(t.Name()))
+	})
 }

@@ -20,9 +20,23 @@ var dummySpaces = parseYamlArray(dummySpacesYaml)
 var dummyIndexesYaml []byte
 var dummyIndexes = parseYamlArray(dummyIndexesYaml)
 
+//go:embed dummy-execute.1.yaml
+var dummyExecute1Yaml []byte
+var dummyExecute1 = parseYamlMap(dummyExecute1Yaml)
+
 // parseYamlArray just parses YAML content into array
 func parseYamlArray(content []byte) []any {
 	var m []any
+	err := yaml.Unmarshal(content, &m)
+	if err != nil {
+		panic(err)
+	}
+	return m
+}
+
+// parseYamlArray just parses YAML content into map
+func parseYamlMap(content []byte) map[any]any {
+	m := make(map[any]any)
 	err := yaml.Unmarshal(content, &m)
 	if err != nil {
 		panic(err)

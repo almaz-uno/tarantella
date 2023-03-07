@@ -27,7 +27,10 @@ func doMain() error {
 	r, err := conn.Ping()
 	log.Error().Err(err).Uint32("res", r.Code).Msg("Ping successfully")
 
-	resp, err := conn.Insert("tester", []any{"assd", "ABBA", 1972})
+	resp, err := conn.Execute(`select * from things`, []interface{}{})
+	log.Info().Err(err).Any("resp", resp).Msg("Prepared")
+
+	resp, err = conn.Insert("tester", []any{"assd", "ABBA", 1972})
 	// resp, err := conn.Insert("tester", []any{5, "Lord Huron", 2020})
 	if err != nil {
 		log.Error().Err(err).Msg("Insert failed")

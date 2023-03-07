@@ -125,6 +125,11 @@ func (pack *Package) BodySpaceID() uint64 {
 	return body[uint64](pack, IPROTO_SPACE_ID)
 }
 
+// BodySQLText returns IPROTO_SQL_TEXT
+func (pack *Package) BodySQLText() string {
+	return body[string](pack, IPROTO_SQL_TEXT)
+}
+
 // BodyFeatures returns IPROTO_FEATURES
 func (pack *Package) BodyFeatures() []any {
 	return body[[]any](pack, IPROTO_FEATURES)

@@ -7,4 +7,3 @@ help: # Show this help
 include ./build/init.mk
 include ./build/build.mk
 include ./build/lint.mk
-

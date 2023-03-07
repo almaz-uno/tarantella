@@ -82,7 +82,7 @@ func (clc *clientConnection) loop() error {
 			log.Error().Err(err).Msg("Failed to parse incoming request")
 			return errors.Wrap(err, "failed to parse incoming request")
 		}
-		res, err := clc.processResponse(req)
+		res, err := clc.prepareResponse(req)
 		if errors.Is(err, errUnanswerable) {
 			continue
 		}
@@ -111,9 +111,9 @@ func (clc *clientConnection) spaceFile(spaceID uint64) string {
 	return filepath.Join(clc.sinkDir(), fmt.Sprintf("%d.yaml", spaceID))
 }
 
-// processResponse can returns nil as a package and no error (nil) if request
+// prepareResponse can returns nil, errUnanswerable if request
 // doesn't require a response like IPROTO_WATCH request
-func (clc *clientConnection) processResponse(req *Package) (*Package, error) {
+func (clc *clientConnection) prepareResponse(req *Package) (*Package, error) {
 	res := &Package{}
 
 	requestType := req.HeaderRequestType()
@@ -138,6 +138,9 @@ func (clc *clientConnection) processResponse(req *Package) (*Package, error) {
 		}
 	case IPROTO_PING:
 		res.SetHeader(IPROTO_SCHEMA_VERSION, schemaVersion)
+	case IPROTO_EXECUTE:
+		res.SetHeader(IPROTO_SCHEMA_VERSION, schemaVersion)
+		return clc.processExecute(req, res)
 	case IPROTO_WATCH:
 		return nil, errUnanswerable
 	case IPROTO_SELECT:
@@ -148,6 +151,16 @@ func (clc *clientConnection) processResponse(req *Package) (*Package, error) {
 		log.Warn().Str("request-type", requestTypeDescription).Msg("Unimplemented or unknown request type")
 		res.SetHeader(IPROTO_REQUEST_TYPE, IPROTO_TYPE_ERROR|tarantool.ErrUnknownRequestType)
 	}
+	return res, nil
+}
+
+func (clc *clientConnection) processExecute(req, res *Package) (*Package, error) {
+	sqlText := req.BodySQLText()
+	log.Info().Str("sql-text", sqlText).Msg("SQL execute")
+
+	res.SetBody(IPROTO_DATA, dummyExecute1["data"])
+	res.SetBody(IPROTO_METADATA, dummyExecute1["metadata"])
+
 	return res, nil
 }
 
